@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1",
+    "amount": 3000,
+    "category": "Salary",
+    "note": "Monthly salary",
+    "type": "income",
+    "date": "2025-06-01T10:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "amount": 100,
+    "category": "Groceries",
+    "note": "Weekly shopping",
+    "type": "expense",
+    "date": "2025-06-02T12:30:00.000Z"
+  },
+  {
+    "id": "3",
+    "amount": 50,
+    "category": "Transport",
+    "note": "Bus fare",
+    "type": "expense",
+    "date": "2025-06-03T08:00:00.000Z"
+  },
+  {
+    "id": "4",
+    "amount": 500,
+    "category": "Freelance",
+    "note": "Web project",
+    "type": "income",
+    "date": "2025-06-04T15:00:00.000Z"
+  }
+]
