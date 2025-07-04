@@ -140,6 +140,51 @@ app.delete("/api/transactions/:id", (req: Request, res: Response) => {
   }
 });
 
+app.patch("/api/transactions/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { amount, category, note, type, date } = req.body;
+
+  const existing = db
+    .prepare("SELECT * FROM transactions WHERE id = ?")
+    .get(id) as Transaction | undefined;
+
+  if (!existing) {
+    res.status(404).json({ error: "Transaction not found" });
+    return;
+  }
+
+  const updatedTransaction: Transaction = {
+    id,
+    amount: amount !== undefined ? amount : existing.amount,
+    category: category !== undefined ? category : existing.category,
+    note: note !== undefined ? note : existing.note,
+    type: type !== undefined ? type : existing.type,
+    date: date !== undefined ? date : existing.date,
+  };
+
+  try {
+    db.prepare(
+      `
+      UPDATE transactions
+      SET amount = ?, category = ?, note = ?, type = ?, date = ?
+      WHERE id = ?
+    `
+    ).run(
+      updatedTransaction.amount,
+      updatedTransaction.category,
+      updatedTransaction.note,
+      updatedTransaction.type,
+      updatedTransaction.date,
+      id
+    );
+
+    res.json(updatedTransaction);
+  } catch (err) {
+    console.error("Failed to patch transaction:", err);
+    res.status(500).json({ error: "Failed to update transaction" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
