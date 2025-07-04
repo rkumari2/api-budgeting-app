@@ -1,5 +1,6 @@
 import cors from "cors";
 import express, { Request, Response } from "express";
+import { v4 as uuidv4 } from "uuid";
 import db from "./db";
 import { Transaction } from "./types";
 
@@ -90,6 +91,44 @@ app.get(
     }
   }
 );
+
+app.post("/api/transactions", (req: Request, res: Response) => {
+  const { amount, category, note, type, date } = req.body;
+
+  if (!amount || !category || !type || !date) {
+    res.status(400).json({ error: "Missing required fields" });
+    return;
+  }
+
+  if (!["income", "expense"].includes(type)) {
+    res.status(400).json({ error: "Invalid type (must be income or expense)" });
+    return;
+  }
+
+  const id = uuidv4();
+
+  try {
+    db.prepare(
+      `
+      INSERT INTO transactions (id, amount, category, note, type, date)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `
+    ).run(id, amount, category, note, type, date);
+
+    const newTransaction: Transaction = {
+      id,
+      amount,
+      category,
+      note,
+      type,
+      date,
+    };
+    res.status(201).json(newTransaction);
+  } catch (err) {
+    console.error("Failed to insert transaction:", err);
+    res.status(500).json({ error: "Failed to create transaction" });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
