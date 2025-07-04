@@ -130,6 +130,16 @@ app.post("/api/transactions", (req: Request, res: Response) => {
   }
 });
 
+app.delete("/api/transactions/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = db.prepare("DELETE FROM transactions WHERE id = ?").run(id);
+  if (result.changes) {
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: "Transaction not found" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
